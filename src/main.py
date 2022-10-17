@@ -1,5 +1,4 @@
-from platform import platform
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from game import Game
 
 app = Flask(__name__)
@@ -7,7 +6,7 @@ app = Flask(__name__)
 games = [
     Game(
         name="God of War",
-        category="Rack'n Slash",
+        category="Hack'n Slash",
         platform="PS2",
     ),
     Game(
@@ -66,11 +65,7 @@ def create():
         platform=platform,
     )
     games.append(game)
-    return render_template(
-        "game_list.html",
-        title="Jogos",
-        games=games,
-    )
+    return redirect("/")
 
 
 app.run(debug=True)
