@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, session, flash
-from game import Game
+from flask import Flask, render_template, request, redirect, session, flash, url_for
+from models import *
+
 
 app = Flask(__name__)
 app.secret_key = "alura"
@@ -44,8 +45,10 @@ def index():
 
 @app.route("/login")
 def login():
+    _next = request.args.get("next")
     return render_template(
         "login.html",
+        next=_next,
     )
 
 
@@ -56,23 +59,36 @@ def login():
     ],
 )
 def authenticate():
-    if request.form["password"] == "1234":
-        session["user"] = request.form["user"]
-        flash(session["user"] + " logado com sucesso!")
-        return redirect("/")
+    if request.form["user"] in users:
+        user = users[request.form["user"]]
+        if request.form["password"] == user.password:
+            session["user"] = user.nickname
+            flash(user.nickname + " logado com sucesso!")
+            next_page = request.form["next"]
+            if not next_page:
+                return redirect(next_page)
+            return redirect(url_for("index"))
     flash("Usuário ou senha inválidos!")
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
 @app.route("/logout")
 def logout():
     session["user"] = None
     flash("Logout efetuado com sucesso!")
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
 @app.route("/new")
 def new():
+    if "user" not in session or not session["user"]:
+        return redirect(
+            url_for(
+                "login",
+                next=url_for("new"),
+            ),
+        )
+
     return render_template(
         "new_game.html",
         title="New Game",
@@ -95,7 +111,7 @@ def create():
         platform=platform,
     )
     games.append(game)
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 app.run(debug=True)
