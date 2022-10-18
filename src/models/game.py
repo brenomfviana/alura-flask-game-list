@@ -1,40 +1,11 @@
-class Game:
-    def __init__(
-        self,
-        *,
-        name: str = None,
-        category: str = None,
-        platform: str = None,
-    ) -> None:
-        self.name = name
-        self.category = category
-        self.platform = platform
+from app import db
 
 
-games = [
-    Game(
-        name="God of War",
-        category="Hack'n Slash",
-        platform="PS2",
-    ),
-    Game(
-        name="Mortal Combat",
-        category="Fighting",
-        platform="PS3",
-    ),
-    Game(
-        name="Crash Bandicoot",
-        category="Adventure",
-        platform="PS1",
-    ),
-    Game(
-        name="Valorant",
-        category="FPS",
-        platform="PC",
-    ),
-    Game(
-        name="Tetris",
-        category="Puzzle",
-        platform="Atari",
-    ),
-]
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(40), nullable=False)
+    platform = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.name}"

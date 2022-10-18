@@ -1,20 +1,10 @@
-class User:
-    def __init__(
-        self,
-        *,
-        name: str = None,
-        nickname: str = None,
-        password: str = None,
-    ) -> None:
-        self.name = name
-        self.nickname = nickname
-        self.password = password
+from app import db
 
 
-user1 = User(name="Breno Viana", nickname="Breno", password="1234")
-user2 = User(name="Raymara Almeida", nickname="Ray", password="enzogabriel")
+class User(db.Model):
+    nickname = db.Column(db.String(8), primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
 
-users = {
-    user1.nickname: user1,
-    user2.nickname: user2,
-}
+    def __repr__(self) -> str:
+        return f"{self.name}"

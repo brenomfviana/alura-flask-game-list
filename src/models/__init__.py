@@ -1,2 +1,2 @@
-from .game import Game, games
-from .user import User, users
+from .game import Game
+from .user import User

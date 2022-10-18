@@ -1,5 +1,4 @@
 from flask import (
-    Flask,
     render_template,
     request,
     redirect,
@@ -7,53 +6,8 @@ from flask import (
     flash,
     url_for,
 )
-from flask_sqlalchemy import SQLAlchemy
-
-
-app = Flask(__name__)
-app.secret_key = "alura"
-uri = "{dbms}://{user}:{password}@{server}/{database}".format(
-    dbms="mysql+mysqlconnector",
-    user="root",
-    password="#Admin123",
-    server="localhost",
-    database="jogoteca",
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
-
-db = SQLAlchemy(app)
-
-
-class Game(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
-    category = db.Column(db.String(40), nullable=False)
-    platform = db.Column(db.String(20), nullable=False)
-
-    def __repr__(self) -> str:
-        return f"{self.name}"
-
-
-class User(db.Model):
-    nickname = db.Column(db.String(8), primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-
-    def __repr__(self) -> str:
-        return f"{self.name}"
-
-
-class User(db.Model):
-    def __init__(
-        self,
-        *,
-        name: str = None,
-        nickname: str = None,
-        password: str = None,
-    ) -> None:
-        self.name = name
-        self.nickname = nickname
-        self.password = password
+from app import app, db
+from models import Game, User
 
 
 @app.route("/")
@@ -145,6 +99,3 @@ def create():
         db.session.commit()
 
     return redirect(url_for("index"))
-
-
-app.run(debug=True)
