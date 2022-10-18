@@ -1,41 +1,64 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for
-from models import *
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    flash,
+    url_for,
+)
+from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
 app.secret_key = "alura"
+uri = "{dbms}://{user}:{password}@{server}/{database}".format(
+    dbms="mysql+mysqlconnector",
+    user="root",
+    password="#Admin123",
+    server="localhost",
+    database="jogoteca",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
-games = [
-    Game(
-        name="God of War",
-        category="Hack'n Slash",
-        platform="PS2",
-    ),
-    Game(
-        name="Mortal Combat",
-        category="Fighting",
-        platform="PS3",
-    ),
-    Game(
-        name="Crash Bandicoot",
-        category="Adventure",
-        platform="PS1",
-    ),
-    Game(
-        name="Valorant",
-        category="FPS",
-        platform="PC",
-    ),
-    Game(
-        name="Tetris",
-        category="Puzzle",
-        platform="Atari",
-    ),
-]
+db = SQLAlchemy(app)
+
+
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(40), nullable=False)
+    platform = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.name}"
+
+
+class User(db.Model):
+    nickname = db.Column(db.String(8), primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.name}"
+
+
+class User(db.Model):
+    def __init__(
+        self,
+        *,
+        name: str = None,
+        nickname: str = None,
+        password: str = None,
+    ) -> None:
+        self.name = name
+        self.nickname = nickname
+        self.password = password
 
 
 @app.route("/")
 def index():
+    games = Game.query.order_by(Game.id)
     return render_template(
         "game_list.html",
         title="Jogos",
@@ -59,13 +82,13 @@ def login():
     ],
 )
 def authenticate():
-    if request.form["user"] in users:
-        user = users[request.form["user"]]
+    user = User.query.filter_by(nickname=request.form["user"]).first()
+    if user:
         if request.form["password"] == user.password:
             session["user"] = user.nickname
             flash(user.nickname + " logado com sucesso!")
             next_page = request.form["next"]
-            if not next_page:
+            if next_page:
                 return redirect(next_page)
             return redirect(url_for("index"))
     flash("Usuário ou senha inválidos!")
@@ -105,12 +128,22 @@ def create():
     name = request.form["name"]
     category = request.form["category"]
     platform = request.form["platform"]
-    game = Game(
+
+    game = Game.query.filter_by(
         name=name,
-        category=category,
-        platform=platform,
-    )
-    games.append(game)
+    ).first()
+
+    if game:
+        flash("O jogo já está registrado!")
+    else:
+        new_game = Game(
+            name=name,
+            category=category,
+            platform=platform,
+        )
+        db.session.add(new_game)
+        db.session.commit()
+
     return redirect(url_for("index"))
 
 
