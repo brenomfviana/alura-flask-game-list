@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash
 from game import Game
 
 app = Flask(__name__)
+app.secret_key = "alura"
 
 games = [
     Game(
@@ -39,6 +40,35 @@ def index():
         title="Jogos",
         games=games,
     )
+
+
+@app.route("/login")
+def login():
+    return render_template(
+        "login.html",
+    )
+
+
+@app.route(
+    "/authenticate",
+    methods=[
+        "POST",
+    ],
+)
+def authenticate():
+    if request.form["password"] == "1234":
+        session["user"] = request.form["user"]
+        flash(session["user"] + " logado com sucesso!")
+        return redirect("/")
+    flash("Usuário ou senha inválidos!")
+    return redirect("/login")
+
+
+@app.route("/logout")
+def logout():
+    session["user"] = None
+    flash("Logout efetuado com sucesso!")
+    return redirect("/login")
 
 
 @app.route("/new")

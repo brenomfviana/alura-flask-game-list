@@ -21,12 +21,12 @@
         {% endif %}
         {% endwith %}
 
-        <div class="page-header">
-            <h1>{{ title }}</h1>
-        </div>
-
-        {% block content %} {% endblock %}
-
+        <h1>Faça seu login</h1>
+        <form method="POST" action="/authenticate">
+            <p><label>Nome de usuário:</label> <input class="form-control" type="text" name="user" required></p>
+            <p><label>Senha:</label> <input class="form-control" type="password" name="password" required></p>
+            <p><button class="btn btn-primary" type="submit">Entrar</button></p>
+        </form>
     </div>
 </body>
 
