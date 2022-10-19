@@ -1,6 +1,7 @@
 from typing import List
-from models import Game
+
 from app import db
+from models import Game
 
 
 class GameService:
@@ -37,13 +38,10 @@ class GameService:
     ) -> Game:
         id = kwargs.pop("id", None)
         game = GameService().get(id=id)
-
         if game:
             game.name = kwargs.pop("name", None)
             game.category = kwargs.pop("category", None)
             game.platform = kwargs.pop("platform", None)
-
             db.session.add(game)
             db.session.commit()
-
         return game

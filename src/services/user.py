@@ -1,6 +1,7 @@
 from typing import List
-from models import User
+
 from app import db
+from models import User
 
 
 class UserService:
@@ -35,15 +36,11 @@ class UserService:
         *_,
         **kwargs,
     ) -> User:
-        id = kwargs.pop("id", None)
-        user = UserService().get(id=id)
-
+        nickname = kwargs.pop("nickname", None)
+        user = UserService().get(nickname=nickname)
         if user:
             user.name = kwargs.pop("name", None)
-            user.category = kwargs.pop("category", None)
-            user.platform = kwargs.pop("platform", None)
-
+            user.password = kwargs.pop("password", None)
             db.session.add(user)
             db.session.commit()
-
         return user
