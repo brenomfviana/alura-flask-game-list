@@ -8,6 +8,7 @@ from flask import (
 )
 from app import app, db
 from models import Game, User
+from services import AuthService, RouteService
 
 
 @app.route("/")
@@ -58,12 +59,10 @@ def logout():
 
 @app.route("/new")
 def new():
-    if "user" not in session or not session["user"]:
-        return redirect(
-            url_for(
-                "login",
-                next=url_for("new"),
-            ),
+    if AuthService().is_authenticated(session=session):
+        return RouteService().redirect(
+            redirect_page="login",
+            next_page="new",
         )
 
     return render_template(
@@ -97,5 +96,42 @@ def create():
         )
         db.session.add(new_game)
         db.session.commit()
+
+    return redirect(url_for("index"))
+
+
+@app.route("/edit/<int:id>")
+def edit(id):
+    if AuthService().is_authenticated(session=session):
+        return RouteService().redirect(
+            redirect_page="login",
+            next_page="edit",
+        )
+
+    game = Game.query.filter_by(id=id).first()
+
+    return render_template(
+        "edit_game.html",
+        title="Edit Game",
+        game=game,
+    )
+
+
+@app.route(
+    "/update",
+    methods=[
+        "POST",
+    ],
+)
+def update():
+    id = request.form["id"]
+    game = Game.query.filter_by(id=id).first()
+
+    game.name = request.form["name"]
+    game.category = request.form["category"]
+    game.platform = request.form["platform"]
+
+    db.session.add(game)
+    db.session.commit()
 
     return redirect(url_for("index"))
