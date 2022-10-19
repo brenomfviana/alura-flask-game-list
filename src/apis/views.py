@@ -1,6 +1,13 @@
 from app import app
-from flask import flash, redirect, render_template, request, url_for
-from services import AuthService, GameService, RouteService
+from flask import (
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    url_for,
+)
+from services import AuthService, GameService, ImageService, RouteService
 
 
 @app.route("/")
@@ -81,11 +88,13 @@ def edit(id):
         )
 
     game = GameService().get(id=id)
+    cover = ImageService().get_image(id=id)
 
     return render_template(
         "edit_game.html",
         title="Edit Game",
         game=game,
+        cover=cover,
     )
 
 
@@ -117,11 +126,15 @@ def create():
     if GameService().get(name=name):
         flash("O jogo já está registrado!")
     else:
-        GameService().create(
+        game = GameService().create(
             name=name,
             category=category,
             platform=platform,
         )
+
+        picture = request.files["file"]
+        path = app.config["UPLOAD_PATH"]
+        picture.save(f"{path}/capa{game.id}.jpg")
 
     return redirect(url_for("index"))
 
@@ -135,11 +148,20 @@ def create():
 def update():
     id = request.form["id"]
 
-    GameService().update(
+    game = GameService().update(
         id=id,
         name=request.form["name"],
         category=request.form["category"],
         platform=request.form["platform"],
     )
 
+    picture = request.files["file"]
+    path = app.config["UPLOAD_PATH"]
+    picture.save(f"{path}/capa{game.id}.jpg")
+
     return redirect(url_for("index"))
+
+
+@app.route("/uploads/<filename>")
+def image(filename):
+    return send_from_directory(app.config["UPLOAD_PATH"], filename)
