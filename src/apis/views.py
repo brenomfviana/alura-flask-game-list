@@ -1,18 +1,12 @@
-from flask import (
-    render_template,
-    request,
-    redirect,
-    session,
-    flash,
-    url_for,
-)
 from app import app
-from services import AuthService, RouteService, GameService, UserService
+from flask import flash, redirect, render_template, request, url_for
+from services import AuthService, GameService, RouteService
 
 
 @app.route("/")
 def index():
     games = GameService().list()
+
     return render_template(
         "game_list.html",
         title="Jogos",
@@ -22,11 +16,12 @@ def index():
 
 @app.route("/login")
 def login():
-    _next = request.args.get("next")
-    if _next:
+    next = request.args.get("next")
+
+    if next:
         return render_template(
             "login.html",
-            next=_next,
+            next=next,
         )
     else:
         return render_template(
@@ -41,18 +36,15 @@ def login():
     ],
 )
 def authenticate():
-    user = UserService().get(nickname=request.form["user"])
+    if AuthService().authenticate(data=request.form):
+        user = AuthService().get_user()
+        flash(user.nickname + " logado com sucesso!")
 
-    if user:
-        if request.form["password"] == user.password:
-            session["user"] = user.nickname
-            flash(user.nickname + " logado com sucesso!")
+        next_page = request.form["next"]
+        if next_page and next_page != "None":
+            return redirect(next_page)
 
-            next_page = request.form["next"]
-            if next_page and next_page != "None":
-                return redirect(next_page)
-
-            return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
     flash("Usuário ou senha inválidos!")
 
@@ -61,14 +53,14 @@ def authenticate():
 
 @app.route("/logout")
 def logout():
-    session["user"] = None
+    AuthService().logout()
     flash("Logout efetuado com sucesso!")
     return redirect(url_for("login"))
 
 
 @app.route("/new")
 def new():
-    if AuthService().is_authenticated(session=session):
+    if AuthService().is_authenticated():
         return RouteService().redirect(
             redirect_page="login",
             next_page="new",
@@ -77,6 +69,23 @@ def new():
     return render_template(
         "new_game.html",
         title="New Game",
+    )
+
+
+@app.route("/edit/<int:id>")
+def edit(id):
+    if AuthService().is_authenticated():
+        return RouteService().redirect(
+            redirect_page="login",
+            next_page="edit",
+        )
+
+    game = GameService().get(id=id)
+
+    return render_template(
+        "edit_game.html",
+        title="Edit Game",
+        game=game,
     )
 
 
@@ -101,23 +110,6 @@ def create():
         )
 
     return redirect(url_for("index"))
-
-
-@app.route("/edit/<int:id>")
-def edit(id):
-    if AuthService().is_authenticated(session=session):
-        return RouteService().redirect(
-            redirect_page="login",
-            next_page="edit",
-        )
-
-    game = GameService().get(id=id)
-
-    return render_template(
-        "edit_game.html",
-        title="Edit Game",
-        game=game,
-    )
 
 
 @app.route(
