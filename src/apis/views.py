@@ -8,12 +8,12 @@ from flask import (
 )
 from app import app, db
 from models import Game, User
-from services import AuthService, RouteService
+from services import AuthService, RouteService, GameService
 
 
 @app.route("/")
 def index():
-    games = Game.query.order_by(Game.id)
+    games = GameService().list()
     return render_template(
         "game_list.html",
         title="Jogos",
@@ -82,20 +82,14 @@ def create():
     category = request.form["category"]
     platform = request.form["platform"]
 
-    game = Game.query.filter_by(
-        name=name,
-    ).first()
-
-    if game:
+    if GameService().get(name=name):
         flash("O jogo já está registrado!")
     else:
-        new_game = Game(
+        GameService().create(
             name=name,
             category=category,
             platform=platform,
         )
-        db.session.add(new_game)
-        db.session.commit()
 
     return redirect(url_for("index"))
 
@@ -108,7 +102,7 @@ def edit(id):
             next_page="edit",
         )
 
-    game = Game.query.filter_by(id=id).first()
+    game = GameService().get(id=id)
 
     return render_template(
         "edit_game.html",
@@ -125,13 +119,12 @@ def edit(id):
 )
 def update():
     id = request.form["id"]
-    game = Game.query.filter_by(id=id).first()
 
-    game.name = request.form["name"]
-    game.category = request.form["category"]
-    game.platform = request.form["platform"]
-
-    db.session.add(game)
-    db.session.commit()
+    GameService().update(
+        id=id,
+        name=request.form["name"],
+        category=request.form["category"],
+        platform=request.form["platform"],
+    )
 
     return redirect(url_for("index"))

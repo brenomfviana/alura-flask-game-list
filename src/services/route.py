@@ -4,7 +4,7 @@ from flask import redirect, url_for
 class RouteService:
     def redirect(
         self,
-        *,
+        *_,
         redirect_page=None,
         next_page=None,
     ):

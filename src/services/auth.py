@@ -4,6 +4,6 @@ class AuthService:
         *,
         session=None,
     ):
-        exists = "user" in session
-        is_none = exists and not session["user"]
-        return not exists or is_none
+        exists = "user" not in session
+        is_none = not session["user"]
+        return exists or is_none
