@@ -60,7 +60,7 @@ def logout():
 
 @app.route("/new")
 def new():
-    if AuthService().is_authenticated():
+    if not AuthService().is_authenticated():
         return RouteService().redirect(
             redirect_page="login",
             next_page="new",
@@ -74,7 +74,7 @@ def new():
 
 @app.route("/edit/<int:id>")
 def edit(id):
-    if AuthService().is_authenticated():
+    if not AuthService().is_authenticated():
         return RouteService().redirect(
             redirect_page="login",
             next_page="edit",
@@ -87,6 +87,20 @@ def edit(id):
         title="Edit Game",
         game=game,
     )
+
+
+@app.route("/delete/<int:id>")
+def delete(id):
+    if not AuthService().is_authenticated():
+        return RouteService().redirect(
+            redirect_page="login",
+        )
+
+    GameService().delete(id=id)
+
+    flash("Jogo deletado com sucesso!")
+
+    return redirect(url_for("index"))
 
 
 @app.route(

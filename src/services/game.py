@@ -45,3 +45,11 @@ class GameService:
             db.session.add(game)
             db.session.commit()
         return game
+
+    def delete(
+        self,
+        *_,
+        id=None,
+    ) -> Game:
+        Game.query.filter_by(id=id).delete()
+        db.session.commit()

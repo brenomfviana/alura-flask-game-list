@@ -29,9 +29,7 @@ class AuthService:
         return False
 
     def is_authenticated(self) -> bool:
-        exists = self.USER_KEY in self.session
-        is_none = exists and not self.session[self.USER_KEY]
-        return exists or is_none
+        return bool(self.get_user())
 
     def get_user(self) -> User:
         if self.USER_KEY in self.session:
