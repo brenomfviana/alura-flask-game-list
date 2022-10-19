@@ -6,9 +6,8 @@ from flask import (
     flash,
     url_for,
 )
-from app import app, db
-from models import Game, User
-from services import AuthService, RouteService, GameService
+from app import app
+from services import AuthService, RouteService, GameService, UserService
 
 
 @app.route("/")
@@ -24,10 +23,15 @@ def index():
 @app.route("/login")
 def login():
     _next = request.args.get("next")
-    return render_template(
-        "login.html",
-        next=_next,
-    )
+    if _next:
+        return render_template(
+            "login.html",
+            next=_next,
+        )
+    else:
+        return render_template(
+            "login.html",
+        )
 
 
 @app.route(
@@ -37,16 +41,21 @@ def login():
     ],
 )
 def authenticate():
-    user = User.query.filter_by(nickname=request.form["user"]).first()
+    user = UserService().get(nickname=request.form["user"])
+
     if user:
         if request.form["password"] == user.password:
             session["user"] = user.nickname
             flash(user.nickname + " logado com sucesso!")
+
             next_page = request.form["next"]
-            if next_page:
+            if next_page and next_page != "None":
                 return redirect(next_page)
+
             return redirect(url_for("index"))
+
     flash("Usuário ou senha inválidos!")
+
     return redirect(url_for("login"))
 
 
