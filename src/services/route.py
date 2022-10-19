@@ -8,6 +8,13 @@ class RouteService:
         redirect_page=None,
         next_page=None,
     ):
+        assert redirect_page != None
+
+        if not next_page:
+            return redirect(
+                url_for(redirect_page),
+            )
+
         return redirect(
             url_for(
                 redirect_page,
