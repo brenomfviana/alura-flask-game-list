@@ -1,13 +1,8 @@
 from app import app
-from flask import (
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_from_directory,
-    url_for,
-)
-from services import AuthService, GameService, ImageService, RouteService
+from flask import flash, render_template, request, send_from_directory
+from services import AuthService, GameService, ImageService, RedirectService
+
+NEXT_PAGE = "next"
 
 
 @app.route("/")
@@ -23,12 +18,12 @@ def index():
 
 @app.route("/login")
 def login():
-    next = request.args.get("next")
+    next_page = request.args.get(NEXT_PAGE)
 
-    if next:
+    if next_page:
         return render_template(
             "login.html",
-            next=next,
+            next=next_page,
         )
     else:
         return render_template(
@@ -47,31 +42,28 @@ def authenticate():
         user = AuthService().get_user()
         flash(user.nickname + " logado com sucesso!")
 
-        next_page = request.form["next"]
+        next_page = request.form[NEXT_PAGE]
         if next_page and next_page != "None":
-            return redirect(next_page)
+            return RedirectService().to_page(page=next_page)
 
-        return redirect(url_for("index"))
+        return RedirectService().to_index()
 
     flash("Usuário ou senha inválidos!")
 
-    return redirect(url_for("login"))
+    return RedirectService().to_login()
 
 
 @app.route("/logout")
 def logout():
     AuthService().logout()
     flash("Logout efetuado com sucesso!")
-    return redirect(url_for("login"))
+    return RedirectService().to_login()
 
 
 @app.route("/new")
 def new():
     if not AuthService().is_authenticated():
-        return RouteService().redirect(
-            redirect_page="login",
-            next_page="new",
-        )
+        return RedirectService().to_login(next_page="new")
 
     return render_template(
         "new_game.html",
@@ -82,10 +74,7 @@ def new():
 @app.route("/edit/<int:id>")
 def edit(id):
     if not AuthService().is_authenticated():
-        return RouteService().redirect(
-            redirect_page="login",
-            next_page="edit",
-        )
+        return RedirectService().to_login(next_page="edit")
 
     game = GameService().get(id=id)
     cover = ImageService().get_image(id=id)
@@ -101,15 +90,13 @@ def edit(id):
 @app.route("/delete/<int:id>")
 def delete(id):
     if not AuthService().is_authenticated():
-        return RouteService().redirect(
-            redirect_page="login",
-        )
+        return RedirectService().to_login()
 
     GameService().delete(id=id)
 
     flash("Jogo deletado com sucesso!")
 
-    return redirect(url_for("index"))
+    return RedirectService().to_index()
 
 
 @app.route(
@@ -136,7 +123,7 @@ def create():
         picture_name = ImageService().new_name(id=game.id)
         picture.save(picture_name)
 
-    return redirect(url_for("index"))
+    return RedirectService().to_index()
 
 
 @app.route(
@@ -161,7 +148,7 @@ def update():
     picture_name = ImageService().new_name(id=game.id)
     picture.save(picture_name)
 
-    return redirect(url_for("index"))
+    return RedirectService().to_index()
 
 
 @app.route("/uploads/<filename>")
