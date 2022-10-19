@@ -133,8 +133,8 @@ def create():
         )
 
         picture = request.files["file"]
-        path = app.config["UPLOAD_PATH"]
-        picture.save(f"{path}/capa{game.id}.jpg")
+        picture_name = ImageService().new_name(id=game.id)
+        picture.save(picture_name)
 
     return redirect(url_for("index"))
 
@@ -155,9 +155,11 @@ def update():
         platform=request.form["platform"],
     )
 
+    ImageService().delete_image(id=game.id)
+
     picture = request.files["file"]
-    path = app.config["UPLOAD_PATH"]
-    picture.save(f"{path}/capa{game.id}.jpg")
+    picture_name = ImageService().new_name(id=game.id)
+    picture.save(picture_name)
 
     return redirect(url_for("index"))
 
