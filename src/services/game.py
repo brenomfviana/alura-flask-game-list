@@ -1,5 +1,8 @@
 from typing import List
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, validators
+
 from app import db
 from models import Game
 
@@ -53,3 +56,28 @@ class GameService:
     ) -> Game:
         Game.query.filter_by(id=id).delete()
         db.session.commit()
+
+
+class GameValidatorService(FlaskForm):
+    name = StringField(
+        "Nome do Jogo",
+        [
+            validators.DataRequired(),
+            validators.Length(min=1, max=50),
+        ],
+    )
+    category = StringField(
+        "Categoria",
+        [
+            validators.DataRequired(),
+            validators.Length(min=1, max=40),
+        ],
+    )
+    platform = StringField(
+        "Plataforma",
+        [
+            validators.DataRequired(),
+            validators.Length(min=1, max=20),
+        ],
+    )
+    save = SubmitField("Salvar")
