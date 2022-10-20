@@ -15,7 +15,8 @@ class ImageService:
         *_,
         id=None,
     ) -> str:
-        target = self.__get_image_prefix(id)
+        assert id != None
+        target = self.__get_image_prefix(id=id)
         for name in os.listdir(self.__get_upload_path()):
             if target in name:
                 return name
@@ -27,6 +28,8 @@ class ImageService:
         picture=None,
         id=None,
     ) -> None:
+        assert picture != None
+        assert id != None
         self.__delete_image(id=id)
         picture_name = self.__new_name(id=id)
         picture.save(picture_name)
@@ -47,7 +50,7 @@ class ImageService:
         id=None,
     ) -> str:
         path = self.__get_upload_path()
-        prefix = self.__get_image_prefix(id)
+        prefix = self.__get_image_prefix(id=id)
         timestamp = time.time()
         return f"{path}/{prefix}-{timestamp}.{self.IMAGE_EXT}"
 
