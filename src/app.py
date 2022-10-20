@@ -12,6 +12,6 @@ db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
 
 if __name__ == "__main__":
-    from apis.views import *
+    from views import *
 
     app.run(debug=True)
