@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <form action="{{ url_for('update') }}" method="post" enctype="multipart/form-data">
+
     <figure class="img-thumbnail col-md-4">
         <img class="img-fluid" src="{{ url_for('image', filename=cover) }}">
         <figcaption>
@@ -10,6 +11,7 @@
             </label>
         </figcaption>
     </figure>
+
     <fieldset>
         <input type="hidden" name="id" value="{{ id }}">
         {{ form.csrf_token() }}
@@ -30,5 +32,6 @@
             <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
         </div>
     </fieldset>
+
 </form>
 {% endblock %}
