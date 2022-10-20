@@ -185,3 +185,4 @@ cython_debug/
 
 # Custom
 /src/uploads/
+.direnv/
