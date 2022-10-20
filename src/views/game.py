@@ -49,7 +49,7 @@ def edit(id):
 @app.route("/delete/<int:id>")
 def delete(id):
     if not AuthService().is_authenticated():
-        return RedirectService().to_login()
+        return RedirectService().to_login(next_page="delete", id=id)
 
     GameService().delete(id=id)
 

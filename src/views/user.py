@@ -53,4 +53,4 @@ def authenticate():
 def logout():
     AuthService().logout()
     flash("Logout efetuado com sucesso!")
-    return RedirectService().to_login()
+    return RedirectService().to_index()
