@@ -2,13 +2,13 @@ import os
 import time
 
 from app import app
+from constants import UPLOAD_PATH
 
 
 class ImageService:
-    UPLOAD_PATH = "UPLOAD_PATH"
-    DEFAULT_COVER = "default_cover.jpg"
     IMAGE_PREFIX = "capa"
     IMAGE_EXT = "jpg"
+    DEFAULT_COVER = "default_cover.jpg"
 
     def get(
         self,
@@ -32,7 +32,7 @@ class ImageService:
         picture.save(picture_name)
 
     def __get_upload_path(self):
-        return app.config[self.UPLOAD_PATH]
+        return app.config[UPLOAD_PATH]
 
     def __get_image_prefix(
         self,

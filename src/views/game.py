@@ -1,4 +1,5 @@
 from app import app
+from constants import FILE_KEY, ID_KEY, UPLOAD_PATH
 from flask import flash, render_template, request, send_from_directory
 from services import (
     AuthService,
@@ -83,7 +84,7 @@ def create():
             platform=platform,
         )
 
-        picture = request.files["file"]
+        picture = request.files[FILE_KEY]
         ImageService().add(
             picture=picture,
             id=game.id,
@@ -102,7 +103,7 @@ def update():
     form = GameValidatorService().get_validator_form()
 
     if form.validate_on_submit():
-        id = request.form["id"]
+        id = request.form[ID_KEY]
 
         game = GameService().update(
             id=id,
@@ -111,7 +112,7 @@ def update():
             platform=form.platform.data,
         )
 
-        picture = request.files["file"]
+        picture = request.files[FILE_KEY]
         ImageService().add(
             picture=picture,
             id=game.id,
@@ -122,4 +123,4 @@ def update():
 
 @app.route("/uploads/<filename>")
 def image(filename):
-    return send_from_directory(app.config["UPLOAD_PATH"], filename)
+    return send_from_directory(app.config[UPLOAD_PATH], filename)
