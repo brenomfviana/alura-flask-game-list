@@ -26,7 +26,7 @@ def new():
 @app.route("/edit/<int:id>")
 def edit(id):
     if not AuthService().is_authenticated():
-        return RedirectService().to_login(next_page="edit")
+        return RedirectService().to_login(next_page="edit", id=id)
 
     game = GameService().get(id=id)
 
