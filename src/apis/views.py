@@ -77,7 +77,7 @@ def new():
     if not AuthService().is_authenticated():
         return RedirectService().to_login(next_page="new")
 
-    form = GameValidatorService()
+    form = GameValidatorService().get_validator_form()
 
     return render_template(
         "new_game.html",
@@ -93,7 +93,7 @@ def edit(id):
 
     game = GameService().get(id=id)
 
-    form = GameValidatorService()
+    form = GameValidatorService().get_validator_form()
     form.name.data = game.name
     form.category.data = game.category
     form.platform.data = game.platform
@@ -128,7 +128,7 @@ def delete(id):
     ],
 )
 def create():
-    form = GameValidatorService(request.form)
+    form = GameValidatorService().get_validator_form()
 
     if not form.validate_on_submit():
         return RedirectService().to_page("new")
@@ -147,8 +147,10 @@ def create():
         )
 
         picture = request.files["file"]
-        picture_name = ImageService().new_name(id=game.id)
-        picture.save(picture_name)
+        ImageService().add(
+            picture=picture,
+            game=game,
+        )
 
     return RedirectService().to_index()
 
@@ -160,7 +162,7 @@ def create():
     ],
 )
 def update():
-    form = GameValidatorService(request.form)
+    form = GameValidatorService().get_validator_form()
 
     if form.validate_on_submit():
         id = request.form["id"]
@@ -172,11 +174,11 @@ def update():
             platform=form.platform.data,
         )
 
-        ImageService().delete_image(id=game.id)
-
         picture = request.files["file"]
-        picture_name = ImageService().new_name(id=game.id)
-        picture.save(picture_name)
+        ImageService().add(
+            picture=picture,
+            game=game,
+        )
 
     return RedirectService().to_index()
 
