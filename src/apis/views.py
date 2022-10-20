@@ -1,5 +1,3 @@
-from re import A
-
 from app import app
 from flask import flash, render_template, request, send_from_directory
 from services import (
@@ -8,6 +6,7 @@ from services import (
     GameValidatorService,
     ImageService,
     RedirectService,
+    UserLoginValidatorService,
 )
 
 NEXT_PAGE = "next"
@@ -30,14 +29,18 @@ def index():
 def login():
     next_page = request.args.get(NEXT_PAGE)
 
+    form = UserLoginValidatorService()
+
     if next_page:
         return render_template(
             "login.html",
+            form=form,
             next=next_page,
         )
     else:
         return render_template(
             "login.html",
+            form=form,
         )
 
 
@@ -48,7 +51,9 @@ def login():
     ],
 )
 def authenticate():
-    if AuthService().authenticate(data=request.form):
+    form = UserLoginValidatorService()
+
+    if AuthService().authenticate(form=form):
         user = AuthService().get_user()
         flash(user.nickname + " logado com sucesso!")
 

@@ -6,7 +6,6 @@ from .user import UserService
 
 class AuthService:
     USER_KEY = "user"
-    PASSWORD_KEY = "password"
 
     def __init__(self) -> None:
         self.session = session
@@ -14,10 +13,10 @@ class AuthService:
     def authenticate(
         self,
         *_,
-        data=None,
+        form=None,
     ) -> bool:
-        user = UserService().get(nickname=data[self.USER_KEY])
-        if user and user.password == data[self.PASSWORD_KEY]:
+        user = UserService().get(nickname=form.nickname.data)
+        if user and user.password == form.password.data:
             self.session[self.USER_KEY] = user.nickname
             return True
         return False

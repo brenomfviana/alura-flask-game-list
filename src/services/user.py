@@ -1,5 +1,8 @@
 from typing import List
 
+from flask_wtf import FlaskForm
+from wtforms import PasswordField, StringField, SubmitField, validators
+
 from app import db
 from models import User
 
@@ -44,3 +47,21 @@ class UserService:
             db.session.add(user)
             db.session.commit()
         return user
+
+
+class UserLoginValidatorService(FlaskForm):
+    nickname = StringField(
+        "Nickname",
+        [
+            validators.DataRequired(),
+            validators.Length(min=1, max=8),
+        ],
+    )
+    password = PasswordField(
+        "Senha",
+        [
+            validators.DataRequired(),
+            validators.Length(min=1, max=100),
+        ],
+    )
+    login = SubmitField("Login")
