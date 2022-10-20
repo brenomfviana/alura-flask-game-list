@@ -1,4 +1,6 @@
+import imp
 from flask import session
+from flask_bcrypt import check_password_hash
 from models import User
 
 from .user import UserService
@@ -16,7 +18,7 @@ class AuthService:
         form=None,
     ) -> bool:
         user = UserService().get(nickname=form.nickname.data)
-        if user and user.password == form.password.data:
+        if user and check_password_hash(user.password, form.password.data):
             self.session[self.USER_KEY] = user.nickname
             return True
         return False

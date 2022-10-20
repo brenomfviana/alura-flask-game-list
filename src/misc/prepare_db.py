@@ -1,4 +1,5 @@
 import mysql.connector
+from flask_bcrypt import generate_password_hash
 from mysql.connector import errorcode
 
 print("Conectando...")
@@ -6,7 +7,7 @@ try:
     conn = mysql.connector.connect(
         host="127.0.0.1",
         user="root",
-        password="@Admin123",
+        password="#Admin123",
     )
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -62,9 +63,26 @@ for table in TABLES:
 # inserindo usuarios
 user_sql = "INSERT INTO user (name, nickname, password) VALUES (%s, %s, %s)"
 users = [
-    ("Bruno Divino", "BD", "alohomora"),
-    ("Camila Ferreira", "Mila", "paozinho"),
-    ("Guilherme Louro", "Cake", "python_eh_vida"),
+    (
+        "Admin",
+        "admin",
+        generate_password_hash("admin").decode("utf-8"),
+    ),
+    (
+        "Bruno Divino",
+        "BD",
+        generate_password_hash("alohomora").decode("utf-8"),
+    ),
+    (
+        "Camila Ferreira",
+        "Mila",
+        generate_password_hash("paozinho").decode("utf-8"),
+    ),
+    (
+        "Guilherme Louro",
+        "Cake",
+        generate_password_hash("python_eh_vida").decode("utf-8"),
+    ),
 ]
 cursor.executemany(user_sql, users)
 
