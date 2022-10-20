@@ -35,7 +35,7 @@ def edit(id):
     form.category.data = game.category
     form.platform.data = game.platform
 
-    cover = ImageService().get_image(id=id)
+    cover = ImageService().get(id=id)
 
     return render_template(
         "edit_game.html",
@@ -86,7 +86,7 @@ def create():
         picture = request.files["file"]
         ImageService().add(
             picture=picture,
-            game=game,
+            id=game.id,
         )
 
     return RedirectService().to_index()
@@ -114,7 +114,7 @@ def update():
         picture = request.files["file"]
         ImageService().add(
             picture=picture,
-            game=game,
+            id=game.id,
         )
 
     return RedirectService().to_index()

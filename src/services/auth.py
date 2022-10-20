@@ -1,6 +1,6 @@
-import imp
-from flask import session
 from flask_bcrypt import check_password_hash
+
+from flask import session
 from models import User
 
 from .user import UserService
