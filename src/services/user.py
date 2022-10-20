@@ -49,7 +49,7 @@ class UserService:
         return user
 
 
-class UserLoginValidatorService(FlaskForm):
+class UserForm(FlaskForm):
     nickname = StringField(
         "Nickname",
         [
@@ -65,3 +65,8 @@ class UserLoginValidatorService(FlaskForm):
         ],
     )
     login = SubmitField("Login")
+
+
+class UserLoginValidatorService:
+    def get_validator_form(self):
+        return UserForm()

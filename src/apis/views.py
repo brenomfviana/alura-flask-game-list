@@ -18,7 +18,7 @@ def index():
     user = AuthService().get_user()
 
     return render_template(
-        "game_list.html",
+        "index.html",
         title="Jogos",
         games=games,
         user=user,
@@ -27,21 +27,18 @@ def index():
 
 @app.route("/login")
 def login():
+    form = UserLoginValidatorService().get_validator_form()
+
+    kwargs = {"form": form}
+
     next_page = request.args.get(NEXT_PAGE)
-
-    form = UserLoginValidatorService()
-
     if next_page:
-        return render_template(
-            "login.html",
-            form=form,
-            next=next_page,
-        )
-    else:
-        return render_template(
-            "login.html",
-            form=form,
-        )
+        kwargs[NEXT_PAGE] = next_page
+
+    return render_template(
+        "login.html",
+        **kwargs,
+    )
 
 
 @app.route(
@@ -51,14 +48,14 @@ def login():
     ],
 )
 def authenticate():
-    form = UserLoginValidatorService()
+    form = UserLoginValidatorService().get_validator_form()
 
     if AuthService().authenticate(form=form):
         user = AuthService().get_user()
         flash(user.nickname + " logado com sucesso!")
 
         next_page = request.form[NEXT_PAGE]
-        if next_page and next_page != "None":
+        if next_page:
             return RedirectService().to_page(page=next_page)
 
         return RedirectService().to_index()

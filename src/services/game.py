@@ -58,7 +58,7 @@ class GameService:
         db.session.commit()
 
 
-class GameValidatorService(FlaskForm):
+class GameForm(FlaskForm):
     name = StringField(
         "Nome do Jogo",
         [
@@ -81,3 +81,8 @@ class GameValidatorService(FlaskForm):
         ],
     )
     save = SubmitField("Salvar")
+
+
+class GameValidatorService:
+    def get_validator_form(self):
+        return GameForm()
