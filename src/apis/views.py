@@ -8,11 +8,13 @@ NEXT_PAGE = "next"
 @app.route("/")
 def index():
     games = GameService().list()
+    user = AuthService().get_user()
 
     return render_template(
         "game_list.html",
         title="Jogos",
         games=games,
+        user=user,
     )
 
 

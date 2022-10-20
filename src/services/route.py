@@ -26,7 +26,7 @@ class RedirectService:
         )
 
     def to_index(self):
-        self.__redirect(
+        return self.__redirect(
             redirect_page=self.INDEX_PAGE,
         )
 

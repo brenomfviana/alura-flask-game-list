@@ -25,6 +25,7 @@
             <input type="text" id="platform" name="platform" class="form-control" value="{{ game.platform }}">
         </div>
         <button type="submit" class="btn btn-primary btn-salvar">Salvar</button>
+        <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
     </fieldset>
 </form>
 {% endblock %}
