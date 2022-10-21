@@ -1,0 +1,74 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | venv
+    | env
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.poetry]
+name = "alura-flask-game-list"
+version = "0.0.0"
+description = "This is a Flask project for listing games. This project was developed during Alura's Flask course."
+authors = ["Breno Viana"]
+readme = "README.md"
+packages = [{include = "src/**/*.py"}]
+homepage = "https://github.com/imobanco/alura-flask-game-list"
+repository = "https://github.com/imobanco/alura-flask-game-list"
+license = "GPLv3"
+
+keywords = ["Alura", "Game List"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"Natural Language :: English (United States)",
+	"Operating System :: OS Independent",
+]
+include = []
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.2.2"
+flask-sqlalchemy = "^3.0.2"
+Flask-WTF = "^1.0.1"
+Flask-Bcrypt = "^1.0.1"
+mysql-connector-python = "^8.0.31"
+Werkzeug = "^2.2.2"
+
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+black = "^22.3.0"
+isort = "^5.9.2"
+
+[tool.poetry.scripts]
+
+# poetry config --list
+[virtualenvs]
+virtualenvs.create = true
+virtualenvs.in-project = true
+virtualenvs.path = "."
